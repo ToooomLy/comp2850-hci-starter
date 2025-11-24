@@ -19,12 +19,14 @@
 ## Before Lab: Required Reading (20 mins)
 
 📖 **Essential**:
+
 - [Nielsen Norman Group: How to Conduct a Usability Test](https://www.nngroup.com/articles/usability-testing-101/)
 - [W3C: Measuring Accessibility](https://www.w3.org/WAI/test-evaluate/metrics/)
 - Review `../../references/evaluation-metrics-quickref.md`
 - Review `../../references/consent-pii-faq.md`
 
 📖 **Contextual**:
+
 - [hypermedia.systems: Instrumentation](https://hypermedia.systems/) (optional chapter if available)
 - [GOV.UK: Planning user research](https://www.gov.uk/service-manual/user-research/plan-a-research-session)
 
@@ -35,11 +37,13 @@
 Weeks 6–8 built a functional, accessible task list prototype. **Now the critical question**: Does it actually work for real people?
 
 **HCI is empirical**. We can't claim "this is usable" without evidence. This week you:
+
 1. Design an evaluation plan (what to measure, how)
 2. Instrument your prototype to capture objective data
 3. Prepare for peer pilots (Week 9 Lab 2)
 
 **Why this matters**:
+
 - **Gradescope Task 2** requires quantitative data (completion times, error rates) + qualitative insights
 - **Week 10 redesign** depends on identifying real bottlenecks (not guesses)
 - **Week 11 portfolio** needs evidence chains: problem → measurement → fix → verification
@@ -52,6 +56,7 @@ Weeks 6–8 built a functional, accessible task list prototype. **Now the critic
 ## Learning Outcomes
 
 By end of lab:
+
 1. **Define** evaluation tasks with clear success criteria (LO3, LO8)
 2. **Select** appropriate quantitative and qualitative metrics (LO4)
 3. **Write** an ethical, repeatable protocol for peer pilots (LO1, LO3)
@@ -74,6 +79,7 @@ Maps to WCAG: 2.2 AA (evaluation must include accessibility testing)
 > **This module uses formative evaluation**: gather data during development (Week 9), redesign (Week 10), verify improvements (Week 10/11).
 >
 > **Components**:
+>
 > - **Tasks**: Realistic scenarios with measurable outcomes
 > - **Metrics**: Objective (time, errors) + subjective (satisfaction, confidence)
 > - **Participants**: Peers, representative of target population
@@ -93,12 +99,14 @@ Maps to WCAG: 2.2 AA (evaluation must include accessibility testing)
 > Participants complete realistic tasks while researchers observe and measure. Contrasts with feature walkthroughs or preference surveys.
 >
 > **Task characteristics**:
+>
 > - **Realistic**: Matches actual use context ("Find invoices" not "Use filter")
 > - **Measurable**: Clear success condition (found correct result, completed within time)
 > - **Scoped**: Completable in 2-5 minutes per task
 > - **Representative**: Covers critical flows identified in backlog
 >
 > **Example**:
+>
 > ```
 > Task T1: Search for Tasks
 > Scenario: "You need to find all tasks containing the word 'invoice'.
@@ -119,6 +127,7 @@ Maps to WCAG: 2.2 AA (evaluation must include accessibility testing)
 > Measurable, observable data: completion time, error count, HTTP status codes. **No interpretation required**.
 >
 > **Examples**:
+>
 > - **Time-on-task**: Milliseconds from task start to completion (server-timed)
 > - **Completion rate**: Did participant achieve goal? (0 = fail, 1 = success)
 > - **Error rate**: `validation_error / (success + validation_error)`
@@ -134,6 +143,7 @@ Maps to WCAG: 2.2 AA (evaluation must include accessibility testing)
 > Self-reported feelings, perceptions, attitudes. Require interpretation.
 >
 > **Examples**:
+>
 > - **Confidence rating**: "How confident are you that you completed the task correctly?" (1–5 scale)
 > - **Difficulty rating**: "How difficult was this task?" (1–7 scale)
 > - **Satisfaction**: Post-session questionnaire (SUS, UMUX-Lite)
@@ -153,12 +163,14 @@ Maps to WCAG: 2.2 AA (evaluation must include accessibility testing)
 > Logging application events at the server (not client). Data captured regardless of JavaScript availability.
 >
 > **Why server-side?**
+>
 > - **Reliability**: Can't be blocked by ad blockers, disabled JS, browser crashes
 > - **Privacy**: No third-party analytics (e.g., Google Analytics) that track across sites
 > - **Parity**: Same data structure for HTMX and no-JS paths
 > - **Control**: You own the data (no GDPR concerns with external processors)
 >
 > **Pattern**:
+>
 > ```kotlin
 > post("/tasks/{id}/edit") {
 >     val start = System.currentTimeMillis()
@@ -169,6 +181,7 @@ Maps to WCAG: 2.2 AA (evaluation must include accessibility testing)
 > ```
 >
 > **Log structure** (CSV):
+>
 > ```csv
 > ts_iso,session_id,request_id,task_code,step,outcome,ms,http_status,js_mode
 > 2025-10-13T14:23:01Z,abc123,r001,T1_filter,success,,1847,200,on
@@ -186,6 +199,7 @@ Maps to WCAG: 2.2 AA (evaluation must include accessibility testing)
 > Build data minimization and privacy into system architecture (not bolt on later).
 >
 > **Week 9 requirements**:
+>
 > - **Anonymous session IDs**: Random tokens (e.g., `sid=X7kL9p`), not names/emails
 > - **No PII in logs**: No IP addresses, device fingerprints, real names
 > - **Opt-out mechanism**: Participants can request data deletion (delete rows matching session_id)
@@ -193,17 +207,21 @@ Maps to WCAG: 2.2 AA (evaluation must include accessibility testing)
 > - **Consent clarity**: Protocol explains what's logged and why
 >
 > **Example — BAD**:
+>
 > ```csv
 > timestamp,email,task,duration
 > 2025-10-13,alice@leeds.ac.uk,T1,1800
 > ```
+>
 > ❌ Email is PII, violates GDPR
 >
 > **Example — GOOD**:
+>
 > ```csv
 > ts_iso,session_id,task_code,ms,js_mode
 > 2025-10-13T14:23:01Z,X7kL9p,T1,1800,on
 > ```
+>
 > ✅ Anonymous, minimal, fit-for-purpose
 >
 > **UK context**: Data Protection Act 2018 + UK GDPR require **lawful basis** for processing. Low-risk peer studies at universities typically use "legitimate interest" or "consent" basis. **Must document** in protocol.
@@ -218,15 +236,18 @@ Maps to WCAG: 2.2 AA (evaluation must include accessibility testing)
 > Middle value in sorted dataset. **Resistant to outliers**.
 >
 > **Example**: Task completion times [10s, 12s, 15s, 18s, 120s]
+>
 > - Mean = (10+12+15+18+120)/5 = **35s** ← skewed by 120s outlier
 > - Median = **15s** ← middle value, represents typical experience
 >
 > **Why use median in HCI?** Completion times often have outliers (someone distracted, interrupted, confused). Median tells you what most people experienced.
 >
 > **Median Absolute Deviation (MAD)**: Robust measure of spread.
+>
 > ```
 > MAD = median(|x_i - median(x)|)
 > ```
+>
 > Less sensitive to outliers than standard deviation.
 >
 > **HCI Connection**: Report median + MAD for timing data. Use mean for Likert scales (confidence ratings) where outliers are meaningful.
@@ -242,11 +263,13 @@ Maps to WCAG: 2.2 AA (evaluation must include accessibility testing)
 ### Step 1: Review backlog and audit findings (10 min)
 
 Open `backlog/backlog.csv` and identify:
+
 - High-priority features (create, edit, delete, filter)
 - Accessibility fixes from Week 7 (inline edit, status announcements)
 - No-JS parity concerns from Week 8
 
 **Example backlog snippet**:
+
 ```csv
 id,week,priority,category,description,wcag,status
 wk7-03,7,high,a11y,"Status messages not announced in no-JS mode",4.1.3,fixed
@@ -255,6 +278,7 @@ wk8-05,8,medium,ux,"Filter doesn't show 'no results' message",3.3.1,open
 ```
 
 **Identify task candidates**:
+
 - **T1**: Filter tasks (tests search, result announcement, no-results state)
 - **T2**: Edit task inline (tests validation, focus management, status announcement)
 - **T3**: Add task (tests create flow, PRG, error handling)
@@ -424,6 +448,7 @@ If participant exceeds time, prompt: "Would you like to continue, or shall we mo
 ### Step 3: Validate tasks with team (5 min)
 
 Walk through each task with your pair/team:
+
 - Are scenarios realistic?
 - Are success criteria measurable?
 - Do they cover your backlog priorities?
@@ -432,11 +457,12 @@ Walk through each task with your pair/team:
 Adjust wording if anything is ambiguous.
 
 ✋ **Stop and check**:
-- [ ] 3-4 tasks defined with clear scenarios
-- [ ] Success criteria objective and measurable
-- [ ] Metrics list includes objective + subjective
-- [ ] Accessibility checks specified per task
-- [ ] Task order and timing planned
+
+- [ ]  3-4 tasks defined with clear scenarios
+- [ ]  Success criteria objective and measurable
+- [ ]  Metrics list includes objective + subjective
+- [ ]  Accessibility checks specified per task
+- [ ]  Task order and timing planned
 
 ---
 
@@ -461,7 +487,9 @@ Reference: `../../references/evaluation-metrics-quickref.md`
 
 **Calculation**:
 ```
+
 Completion rate = (# successes) / (# attempts)
+
 ```
 
 **Data source**: Manual observation + server logs (look for `step=success`)
@@ -490,10 +518,12 @@ Completion rate = (# successes) / (# attempts)
 
 **Example**:
 ```
+
 T1 (Filter):
-  Median: 24s
-  MAD: 6s
-  Range: 12s–58s (n=5)
+Median: 24s
+MAD: 6s
+Range: 12s–58s (n=5)
+
 ```
 
 **Split by**: JS-on vs JS-off (expect no-JS to be slower due to full page reloads)
@@ -506,7 +536,9 @@ T1 (Filter):
 
 **Calculation**:
 ```
+
 Error rate = (# validation_error events) / (# total attempts)
+
 ```
 
 **Data source**: `data/metrics.csv` where `step=validation_error`
@@ -515,9 +547,11 @@ Error rate = (# validation_error events) / (# total attempts)
 
 **Example**:
 ```
+
 T3 (Add Task):
-  Error rate: 2/5 = 40%
-  Errors: 1× blank title, 1× exceeded max length
+Error rate: 2/5 = 40%
+Errors: 1× blank title, 1× exceeded max length
+
 ```
 
 **HCI insight**: High error rates → poor affordances, unclear constraints, or accessibility issues
@@ -534,8 +568,10 @@ T3 (Add Task):
 
 **Example**:
 ```
+
 T2 (Edit):
-  Mean errors per participant: 0.4 (2 errors across 5 participants)
+Mean errors per participant: 0.4 (2 errors across 5 participants)
+
 ```
 
 ---
@@ -557,9 +593,11 @@ T2 (Edit):
 
 **Example**:
 ```
+
 T1 (Filter):
-  Mean confidence: 4.2 ± 0.8
-  Distribution: 0×1, 0×2, 1×3, 2×4, 2×5
+Mean confidence: 4.2 ± 0.8
+Distribution: 0×1, 0×2, 1×3, 2×4, 2×5
+
 ```
 
 **HCI insight**: Low confidence despite successful completion → interface doesn't provide sufficient feedback
@@ -657,11 +695,12 @@ Document any anomalies in `wk09/lab-wk9/research/data-notes.md`
 ```
 
 ✋ **Stop and check**:
-- [ ] Every metric has clear definition
-- [ ] Calculation methods specified
-- [ ] Data sources identified (logs vs manual)
-- [ ] Reporting format decided (median vs mean, etc.)
-- [ ] Accessibility metrics included
+
+- [ ]  Every metric has clear definition
+- [ ]  Calculation methods specified
+- [ ]  Data sources identified (logs vs manual)
+- [ ]  Reporting format decided (median vs mean, etc.)
+- [ ]  Accessibility metrics included
 
 ---
 
@@ -737,11 +776,13 @@ Document any anomalies in `wk09/lab-wk9/research/data-notes.md`
 
 Record in `wk09/lab-wk9/research/consent-log.md`:
 ```
+
 Date: 2025-10-15
 Participant code: P1
 Session ID: X7kL9p
 Consent: Verbal consent given
 Notes: Requested keyboard-only variant
+
 ```
 
 **Opt-out path**: If participant requests deletion:
@@ -763,11 +804,13 @@ Notes: Requested keyboard-only variant
 2. Set cookie in participant browser:
    ```javascript
    document.cookie = "sid=7a9f2c; path=/";
-   ```
+```
+
 3. Navigate to `/tasks` (should be pre-populated with seed data)
 4. Position facilitator to side (not behind—feels invasive)
 
 **Materials**:
+
 - Printed task scenarios (or read aloud)
 - `pilot-notes.md` template open
 - Stopwatch (backup timing)
@@ -777,20 +820,24 @@ Notes: Requested keyboard-only variant
 ## Session Flow
 
 ### 0. Introduction (2 min)
+
 - Consent process (see above)
 - Explain think-aloud (optional): "Feel free to say what you're thinking as you go, but no pressure."
 - Set expectations: "I won't help unless you're stuck for >3 minutes."
 
 ### 1. Warm-up (2 min, not timed)
+
 "Take a minute to browse the task list. Click around, get familiar. Let me know when you're ready to start the timed tasks."
 
 ### 2. Task T3: Add Task (60s limit)
+
 **Read scenario**:
 "You need to remember to 'Call supplier about delivery'. Add this as a new task."
 
 **Start timing** when participant focuses in input field (or reads scenario, if using stopwatch).
 
 **Observe**:
+
 - Do they find the form immediately?
 - Do they submit blank by mistake?
 - Do they notice the success confirmation?
@@ -803,10 +850,12 @@ Notes: Requested keyboard-only variant
 ---
 
 ### 3. Task T1: Filter Tasks (120s limit)
+
 **Read scenario**:
 "You've been asked to find all tasks containing the word 'report'. Use the filter to show only matching tasks, then count how many remain."
 
 **Observe**:
+
 - Do they find the filter box?
 - Do they read the result count?
 - Do they manually count items?
@@ -816,10 +865,12 @@ Notes: Requested keyboard-only variant
 ---
 
 ### 4. Task T2: Edit Task (90s limit)
+
 **Read scenario**:
 "The task 'Submit invoices' has a typo. Change it to 'Submit invoices by Friday' and save the change."
 
 **Observe**:
+
 - Do they find Edit button?
 - Do they trigger validation errors?
 - Do they check that change persisted?
@@ -829,10 +880,12 @@ Notes: Requested keyboard-only variant
 ---
 
 ### 5. Task T4: Delete Task (45s limit)
+
 **Read scenario**:
 "The task 'Test entry' is no longer needed. Delete it."
 
 **Observe**:
+
 - Confirmation dialog (HTMX) or direct submit (no-JS)?
 - Do they verify deletion succeeded?
 
@@ -841,7 +894,9 @@ Notes: Requested keyboard-only variant
 ---
 
 ### 6. Debrief (3 min)
+
 **Ask**:
+
 1. "Which task felt most difficult?"
 2. "Did anything surprise you or not work as you expected?"
 3. "Were there any points where you weren't sure if something had worked?"
@@ -857,18 +912,21 @@ Notes: Requested keyboard-only variant
 ## Facilitator Guidelines
 
 **Do**:
+
 - Remain neutral (don't lead: "Did you see the status message?")
 - Take detailed notes (timestamps, direct quotes)
 - Allow silence (don't fill pauses)
 - Note when you intervene ("Prompted after 3min stuck")
 
 **Don't**:
+
 - Explain the interface before tasks
 - Show participant how to do something (defeats the test)
 - Justify design choices ("It's supposed to work like this...")
 - Make participant feel judged
 
 **If participant is completely stuck**:
+
 - Wait 3 minutes
 - Ask: "What are you looking for?" (diagnostic question)
 - If still stuck: "Let's move to the next task"
@@ -879,9 +937,11 @@ Notes: Requested keyboard-only variant
 ## Data Recording
 
 **Automated** (server logs → `data/metrics.csv`):
+
 - Timestamp, session_id, task_code, step (start/success/validation_error), ms, js_mode
 
 **Manual** (`wk09/lab-wk9/research/pilot-notes.md`):
+
 ```
 Session: P1 (sid=7a9f2c)
 Date: 2025-10-15
@@ -903,6 +963,7 @@ Debrief notes:
 ```
 
 **Subjective ratings** (post-task, in notes):
+
 ```
 Confidence ratings (1–5):
   T3: 5
@@ -916,11 +977,13 @@ Confidence ratings (1–5):
 ## Post-Session
 
 **Immediate**:
+
 1. Save notes to `wk09/lab-wk9/research/pilots/P1-notes.md`
 2. Check `data/metrics.csv` for completeness (all tasks logged?)
 3. Note any missing data or anomalies
 
 **After all pilots**:
+
 1. Copy `data/metrics.csv` to `wk09/lab-wk9/submission/task1-draft/results.csv`
 2. Aggregate notes into themes (Week 10 lab)
 3. Calculate medians, error rates (Week 10 lab)
@@ -930,17 +993,20 @@ Confidence ratings (1–5):
 ## Accessibility Variants
 
 ### Keyboard-Only Session
+
 - Participant uses Tab, Enter, Space only (no mouse)
 - Observe tab order, focus visibility, keyboard traps
 - Note any unreachable elements
 
 ### Screen Reader Session
+
 - Participant uses NVDA (Windows) or Orca (Linux)
 - Allow 2× time for navigation
 - Note announcements, label quality, live region behavior
 - Capture SR output in notes (verbatim if possible)
 
 ### No-JS Session
+
 - Disable JavaScript in browser settings before starting
 - Expect slower times (full page reloads)
 - Verify all tasks still function (parity check)
@@ -951,15 +1017,18 @@ Confidence ratings (1–5):
 ## Risk Mitigation
 
 **Participant distress**: If participant becomes frustrated:
+
 - Reassure: "This is really helpful feedback—it's the interface, not you."
 - Offer to skip task or stop session
 
 **Technical failure**: If server crashes mid-session:
+
 - Restart server, reload page
 - Resume from next task (don't re-run completed tasks)
 - Note incident in data-notes.md
 
 **Data loss**: If logs don't record correctly:
+
 - Use facilitator stopwatch times as backup
 - Note in data-notes.md: "Session P3: server logs incomplete, used manual timing"
 
@@ -968,24 +1037,28 @@ Confidence ratings (1–5):
 ## Summary Checklist
 
 Before each session:
-- [ ] Generate session ID, set cookie
-- [ ] Seed task database with test data
-- [ ] Print or queue task scenarios
-- [ ] Open pilot-notes template
-- [ ] Confirm server running
+
+- [ ]  Generate session ID, set cookie
+- [ ]  Seed task database with test data
+- [ ]  Print or queue task scenarios
+- [ ]  Open pilot-notes template
+- [ ]  Confirm server running
 
 During session:
-- [ ] Read consent script, obtain verbal consent
-- [ ] Record session metadata (P code, sid, date)
-- [ ] Time each task (automated + backup)
-- [ ] Collect confidence ratings
-- [ ] Take qualitative notes with timestamps
-- [ ] Debrief open questions
+
+- [ ]  Read consent script, obtain verbal consent
+- [ ]  Record session metadata (P code, sid, date)
+- [ ]  Time each task (automated + backup)
+- [ ]  Collect confidence ratings
+- [ ]  Take qualitative notes with timestamps
+- [ ]  Debrief open questions
 
 After session:
-- [ ] Save notes to pilots/ directory
-- [ ] Verify logs in metrics.csv
-- [ ] Thank participant, reiterate opt-out path
+
+- [ ]  Save notes to pilots/ directory
+- [ ]  Verify logs in metrics.csv
+- [ ]  Thank participant, reiterate opt-out path
+
 ```
 
 ✋ **Stop and check**:
@@ -1016,19 +1089,21 @@ After session:
 ts_iso,session_id,request_id,task_code,step,outcome,ms,http_status,js_mode
 ```
 
-| Column | Type | Description | Example |
-|--------|------|-------------|---------|
-| `ts_iso` | ISO 8601 timestamp | Event timestamp (UTC) | `2025-10-13T14:23:01.832Z` |
-| `session_id` | String (6-12 chars) | Anonymous session identifier | `X7kL9p` |
-| `request_id` | String | Unique request identifier | `r001` |
-| `task_code` | String | Task identifier from evaluation plan | `T1_filter`, `T2_edit`, `T3_add`, `T4_delete` |
-| `step` | Enum | Event type | `start`, `success`, `validation_error`, `fail`, `server_error` |
-| `outcome` | String | Specific outcome (for errors) | `blank_title`, `max_length`, empty for success |
-| `ms` | Integer | Duration in milliseconds (start to event) | `1847` |
-| `http_status` | Integer | HTTP status code | `200`, `400`, `500` |
-| `js_mode` | Enum | JavaScript availability | `on` (HTMX), `off` (no-JS) |
+
+| Column        | Type                | Description                               | Example                                                        |
+| ------------- | ------------------- | ----------------------------------------- | -------------------------------------------------------------- |
+| `ts_iso`      | ISO 8601 timestamp  | Event timestamp (UTC)                     | `2025-10-13T14:23:01.832Z`                                     |
+| `session_id`  | String (6-12 chars) | Anonymous session identifier              | `X7kL9p`                                                       |
+| `request_id`  | String              | Unique request identifier                 | `r001`                                                         |
+| `task_code`   | String              | Task identifier from evaluation plan      | `T1_filter`, `T2_edit`, `T3_add`, `T4_delete`                  |
+| `step`        | Enum                | Event type                                | `start`, `success`, `validation_error`, `fail`, `server_error` |
+| `outcome`     | String              | Specific outcome (for errors)             | `blank_title`, `max_length`, empty for success                 |
+| `ms`          | Integer             | Duration in milliseconds (start to event) | `1847`                                                         |
+| `http_status` | Integer             | HTTP status code                          | `200`, `400`, `500`                                            |
+| `js_mode`     | Enum                | JavaScript availability                   | `on` (HTMX), `off` (no-JS)                                     |
 
 **Example rows**:
+
 ```csv
 ts_iso,session_id,request_id,task_code,step,outcome,ms,http_status,js_mode
 2025-10-13T14:23:01.832Z,X7kL9p,r001,T1_filter,success,,1847,200,on
@@ -1041,14 +1116,16 @@ ts_iso,session_id,request_id,task_code,step,outcome,ms,http_status,js_mode
 >
 > Let's trace **one participant** (session `X7kL9p`) through their tasks:
 >
-> | # | Time | Task | What Happened | `step` | `outcome` | `ms` | `js_mode` |
-> |---|------|------|---------------|--------|-----------|------|-----------|
-> | **1** | 14:23:01 | **T1** (Filter) | ✅ Successfully filtered tasks | `success` | _(empty)_ | 1847ms | `on` (HTMX) |
-> | **2** | 14:25:12 | **T3** (Add) | ❌ Tried to add blank title | `validation_error` | `blank_title` | 234ms | `on` (HTMX) |
-> | **3** | 14:26:03 | **T3** (Add) | ✅ Retry succeeded | `success` | _(empty)_ | 567ms | `on` (HTMX) |
-> | **4** | 14:28:15 | **T2** (Edit) | ✅ Edited task inline | `success` | _(empty)_ | 1234ms | `on` (HTMX) |
+>
+> | #     | Time     | Task            | What Happened                  | `step`             | `outcome`     | `ms`   | `js_mode`   |
+> | ----- | -------- | --------------- | ------------------------------ | ------------------ | ------------- | ------ | ----------- |
+> | **1** | 14:23:01 | **T1** (Filter) | ✅ Successfully filtered tasks | `success`          | _(empty)_     | 1847ms | `on` (HTMX) |
+> | **2** | 14:25:12 | **T3** (Add)    | ❌ Tried to add blank title    | `validation_error` | `blank_title` | 234ms  | `on` (HTMX) |
+> | **3** | 14:26:03 | **T3** (Add)    | ✅ Retry succeeded             | `success`          | _(empty)_     | 567ms  | `on` (HTMX) |
+> | **4** | 14:28:15 | **T2** (Edit)   | ✅ Edited task inline          | `success`          | _(empty)_     | 1234ms | `on` (HTMX) |
 >
 > **Observations**:
+>
 > - **Same `session_id`** (`X7kL9p`) = all rows belong to one participant's session
 > - **Row 2 → Row 3**: User made a validation error (`blank_title`), then retried successfully
 > - **`ms` column**: Row 2 is fast (234ms) because validation happens server-side instantly, Row 1 is slower (1847ms) because filtering queries the database
@@ -1056,15 +1133,18 @@ ts_iso,session_id,request_id,task_code,step,outcome,ms,http_status,js_mode
 > - **`outcome` empty for success**: Only populated when `step=validation_error` or `fail`
 >
 > **Why this matters for analysis**:
+>
 > - **Error rate**: 1 error / 4 attempts = 25% error rate for this participant
 > - **Recovery**: User recovered from error (Row 3 success after Row 2 error) = good resilience
 > - **Time-to-task**: Row 1 took 1.8 seconds (reasonable for filter operation)
 > - **Comparison**: We can compare this participant's times against median times for T1, T2, T3, T4
 
 **Notes**:
+
 - `ms` measures server-side duration only (not client rendering)
 - `start` events optional (can derive from first log per task per session)
 - `outcome` field allows filtering by specific error types in analysis
+
 ```
 
 ### Step 2: Create Logger helper (10 min)
@@ -1268,15 +1348,17 @@ post("/tasks") {
 ```
 
 **Similarly instrument**:
+
 - `GET /tasks` with `T1_filter` (if query param `q` present)
 - `POST /tasks/{id}/edit` with `T2_edit`
 - `DELETE /tasks/{id}` with `T4_delete`
 
 ✋ **Stop and check**:
-- [ ] Logger.kt compiles and creates metrics.csv
-- [ ] Timing.kt provides timed{} helper
-- [ ] At least one route instrumented (POST /tasks)
-- [ ] Validation errors logged explicitly
+
+- [ ]  Logger.kt compiles and creates metrics.csv
+- [ ]  Timing.kt provides timed{} helper
+- [ ]  At least one route instrumented (POST /tasks)
+- [ ]  Validation errors logged explicitly
 
 ---
 
@@ -1287,6 +1369,7 @@ post("/tasks") {
 ### Step 1: Set session cookie (2 min)
 
 Open browser DevTools Console:
+
 ```javascript
 document.cookie = "sid=DRY_RUN_01; path=/";
 ```
@@ -1296,6 +1379,7 @@ Reload page.
 ### Step 2: Execute test tasks (5 min)
 
 **With JS enabled**:
+
 1. Add task "Test task 1" → expect success row in metrics.csv
 2. Submit empty form → expect validation_error row
 3. Add task "Test task 2" → expect success row
@@ -1310,11 +1394,13 @@ Reload page.
 Open `data/metrics.csv`:
 
 **Expected columns**:
+
 ```csv
 ts_iso,session_id,request_id,task_code,step,outcome,ms,http_status,js_mode
 ```
 
 **Example rows**:
+
 ```csv
 2025-10-13T15:01:23.456Z,DRY_RUN_01,r001,T3_add,success,,567,200,on
 2025-10-13T15:01:45.789Z,DRY_RUN_01,r002,T3_add,validation_error,blank_title,0,400,on
@@ -1325,21 +1411,23 @@ ts_iso,session_id,request_id,task_code,step,outcome,ms,http_status,js_mode
 ```
 
 **Verify**:
-- [ ] All columns present
-- [ ] Timestamps in ISO 8601 format
-- [ ] session_id consistent (DRY_RUN_01)
-- [ ] task_code matches your task definitions
-- [ ] js_mode correct (on for HTMX, off for no-JS)
-- [ ] Durations plausible (not negative, not absurdly high)
-- [ ] HTTP status codes correct (200 success, 400 validation error)
+
+- [ ]  All columns present
+- [ ]  Timestamps in ISO 8601 format
+- [ ]  session_id consistent (DRY_RUN_01)
+- [ ]  task_code matches your task definitions
+- [ ]  js_mode correct (on for HTMX, off for no-JS)
+- [ ]  Durations plausible (not negative, not absurdly high)
+- [ ]  HTTP status codes correct (200 success, 400 validation error)
 
 **If anything is wrong**: Fix Logger.kt or route instrumentation, re-run dry run.
 
 ✋ **Stop and check**:
-- [ ] Dry run completed with JS-on and JS-off paths
-- [ ] metrics.csv contains valid rows
-- [ ] Validation errors logged correctly
-- [ ] Durations captured
+
+- [ ]  Dry run completed with JS-on and JS-off paths
+- [ ]  metrics.csv contains valid rows
+- [ ]  Validation errors logged correctly
+- [ ]  Durations captured
 
 ---
 
@@ -1374,15 +1462,10 @@ EOF
 **Answer in `wk09/reflection.md`**:
 
 1. **Metrics selection**: Which metrics will be most useful for identifying usability issues? Why did you prioritize objective vs subjective data?
-
 2. **Ethical considerations**: What was most challenging about designing a privacy-respecting evaluation? How did you ensure no PII would be collected?
-
 3. **Instrumentation trade-offs**: Server-side logging has limitations (doesn't capture client-side rendering time, scroll behaviour, etc.). What gaps might this create in your analysis?
-
 4. **Task design**: How realistic are your task scenarios? Would they generalize to non-peer participants (e.g., non-CS students)?
-
 5. **Accessibility**: How confident are you that your instrumentation will capture accessibility issues (SR announcements, keyboard traps)? What additional data would you need?
-
 6. **Pilot readiness**: What could go wrong during Week 9 Lab 2 pilots? How have you mitigated those risks?
 
 ---
@@ -1390,12 +1473,14 @@ EOF
 ## Looking Ahead: Week 9 Lab 2 Pilots
 
 Next session (Lab 2):
+
 - Run 5–6 peer pilots using your protocol
 - Collect metrics.csv data + qualitative notes
 - Debrief participants
 - Prepare draft evidence pack for Task 1
 
 **Before Lab 2**:
+
 - Review protocol with your pair (practice reading consent script)
 - Test dry-run one more time (ensure nothing broke)
 - Prepare seed data (task list with known tasks for T1/T2/T4)
@@ -1408,25 +1493,30 @@ Next session (Lab 2):
 ## Further Reading & Resources
 
 ### Essential
+
 - `../../references/evaluation-metrics-quickref.md` — Median, MAD, error rate calculations
 - `../../references/consent-pii-faq.md` — PII definitions, opt-out procedures
 - [Nielsen: How Many Test Users?](https://www.nngroup.com/articles/how-many-test-users/) — 5 users find 85% of issues
 
 ### HCI Evaluation Methods
+
 - **Lazar et al. (2017).** *Research Methods in Human-Computer Interaction* (2nd ed.). Chapters 5-6 (usability testing, metrics)
 - [SIGCHI: Usability Evaluation](https://dl.acm.org/doi/book/10.5555/291224) — Academic grounding
 - [Measuring UX](https://measuringux.com/) — Practical guide to quantitative UX
 
 ### Ethics & Privacy
+
 - [ICO: Data Protection by Design](https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-re../../references/accountability-and-governance/guide-to-accountability-and-governance/accountability-and-governance/data-protection-by-design-and-default/)
 - [BPS Code of Ethics](https://www.bps.org.uk/guideline/code-ethics-and-conduct) — UK professional standards for research
 - [University of Leeds Research Ethics](https://researchsupport.leeds.ac.uk/research-ethics/) — Institutional policy
 
 ### Instrumentation
+
 - [Kohavi et al.: Online Controlled Experiments](https://www.exp-platform.com/) — A/B testing at scale (industry context)
 - [Google Analytics 4: Measurement Protocol](https://developers.google.com/analytics/devguides/collection/protocol/ga4) — Example of event-based logging (we avoid third-party but shows patterns)
 
 ### Accessibility Evaluation
+
 - [WebAIM: Evaluating Accessibility](https://webaim.org/articles/evaluatingcognitive/) — Cognitive disabilities focus
 - [W3C: Involving Users in Evaluating Web Accessibility](https://www.w3.org/WAI/test-evaluate/involving-users/)
 
@@ -1434,18 +1524,19 @@ Next session (Lab 2):
 
 ## Glossary Summary
 
-| Term | One-line definition |
-|------|---------------------|
-| **Usability evaluation** | Systematic assessment of how well people can use a system to achieve goals |
-| **Task-based evaluation** | Participants complete realistic scenarios while researchers observe and measure |
-| **Objective metrics** | Measurable, observable data (time, errors, completion) without interpretation |
-| **Subjective metrics** | Self-reported feelings, perceptions, attitudes (confidence, satisfaction) |
+
+| Term                            | One-line definition                                                                |
+| ------------------------------- | ---------------------------------------------------------------------------------- |
+| **Usability evaluation**        | Systematic assessment of how well people can use a system to achieve goals         |
+| **Task-based evaluation**       | Participants complete realistic scenarios while researchers observe and measure    |
+| **Objective metrics**           | Measurable, observable data (time, errors, completion) without interpretation      |
+| **Subjective metrics**          | Self-reported feelings, perceptions, attitudes (confidence, satisfaction)          |
 | **Server-side instrumentation** | Logging events at the server; reliable, privacy-respecting, works regardless of JS |
-| **Privacy by Design** | Build data minimization and privacy into system architecture from the start |
-| **Median** | Middle value in sorted dataset; resistant to outliers |
-| **MAD** | Median Absolute Deviation; robust measure of spread |
-| **Informed consent** | Participants understand what data is collected, how it's used, and can opt out |
-| **Low-risk study** | Peer-to-peer evaluation with minimal data collection, no vulnerable groups |
+| **Privacy by Design**           | Build data minimization and privacy into system architecture from the start        |
+| **Median**                      | Middle value in sorted dataset; resistant to outliers                              |
+| **MAD**                         | Median Absolute Deviation; robust measure of spread                                |
+| **Informed consent**            | Participants understand what data is collected, how it's used, and can opt out     |
+| **Low-risk study**              | Peer-to-peer evaluation with minimal data collection, no vulnerable groups         |
 
 ---
 
