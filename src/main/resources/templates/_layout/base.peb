@@ -44,6 +44,11 @@
       padding: 1rem;
       margin: 1rem 0;
     }
+
+    button[type="submit"],
+    button {
+      foreground: #ffffff !important; /* 7:1 contrast (AAA) */
+    }
   </style>
   <script src="https://unpkg.com/htmx.org@2.0.0"></script>
 </head>
